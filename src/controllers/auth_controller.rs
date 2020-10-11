@@ -26,3 +26,7 @@ fn create_hash(text: &String) -> String {
     let config = Config::default();
     argon2::hash_encoded(&text_to_hash, &salt, &config).unwrap()
 }
+
+fn verify_hash(text: String, hash: String) -> bool {
+    return argon2::verify_encoded(&hash, &text.into_bytes()).unwrap()
+}
