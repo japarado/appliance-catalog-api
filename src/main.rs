@@ -16,13 +16,23 @@ mod schema;
 mod utils;
 mod errors;
 
+#[derive(Clone)]
+pub struct ApplicationData {
+    conn_pool: database::Pool
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     let mut listenfd = ListenFd::from_env();
 
+
     let mut server = HttpServer::new(|| {
+        let application_data = ApplicationData {
+            conn_pool: database::create_pool()
+        };
         App::new()
+            .app_data(application_data.clone())
             .service(index)
             .configure(routes::config)
             .default_service(web::route().to(fallback_route))
