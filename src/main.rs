@@ -1,5 +1,5 @@
-#[macro_use]
-extern crate diesel;
+#[macro_use] extern crate diesel;
+#[macro_use] extern crate failure;
 
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
@@ -13,6 +13,8 @@ mod database;
 mod models;
 mod routes;
 mod schema;
+mod utils;
+mod errors;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -25,14 +27,16 @@ async fn main() -> std::io::Result<()> {
             .configure(routes::config)
             .default_service(web::route().to(fallback_route))
             .wrap(IdentityService::new(
-
-                    CookieIdentityPolicy::new(env::var("COOKIE_SECRET")
-                        .unwrap_or("DEFAULT_SECRET".to_string()).as_bytes())
-                    .name("auth")
-                    .path("/")
-                    .domain(env::var("APP_DOMAIN").unwrap_or("localhost".to_string()))
-                    .max_age(chrono::Duration::days(1).num_seconds())
-                    .secure(false),
+                CookieIdentityPolicy::new(
+                    env::var("COOKIE_SECRET")
+                        .unwrap_or("DEFAULT_SECRET".to_string())
+                        .as_bytes(),
+                )
+                .name("auth")
+                .path("/")
+                .domain(env::var("APP_DOMAIN").unwrap_or("localhost".to_string()))
+                .max_age(chrono::Duration::days(1).num_seconds())
+                .secure(false),
             ))
     });
 
