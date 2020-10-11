@@ -7,7 +7,7 @@ pub struct User {
     password: String,
     display_name: Option<String>,
     profile_picture: Option<String>,
-    bio: Option<String>
+    bio: Option<String>,
 }
 
 #[derive(Debug, Insertable, AsChangeset)]
@@ -17,5 +17,5 @@ pub struct NewUser {
     password: String,
     display_name: Option<String>,
     profile_picture: Option<String>,
-    bio: Option<String>
+    bio: Option<String>,
 }
