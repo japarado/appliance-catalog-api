@@ -1,6 +1,7 @@
 use crate::schema::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Identifiable, Queryable)]
+#[derive(Debug, Identifiable, Queryable, Serialize, Deserialize)]
 pub struct User {
     id: i32,
     email: String,
@@ -10,7 +11,7 @@ pub struct User {
     bio: Option<String>,
 }
 
-#[derive(Debug, Insertable, AsChangeset)]
+#[derive(Debug, Insertable, AsChangeset, Serialize, Deserialize)]
 #[table_name = "users"]
 pub struct NewUser {
     email: String,
