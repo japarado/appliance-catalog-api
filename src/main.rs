@@ -1,6 +1,7 @@
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use listenfd::ListenFd;
 
+mod controllers;
 mod routes;
 
 #[actix_web::main]
@@ -10,6 +11,7 @@ async fn main() -> std::io::Result<()> {
     let mut server = HttpServer::new(|| {
         App::new()
             .service(index)
+            .configure(routes::config)
             .default_service(web::route().to(fallback_route))
     });
 
