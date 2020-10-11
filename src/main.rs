@@ -3,7 +3,7 @@ extern crate diesel;
 
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use listenfd::ListenFd;
-
+use dotenv::dotenv;
 
 mod controllers;
 mod database;
@@ -13,6 +13,7 @@ mod schema;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
     let mut listenfd = ListenFd::from_env();
 
     let mut server = HttpServer::new(|| {
