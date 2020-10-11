@@ -1,14 +1,17 @@
 #[macro_use]
 extern crate diesel;
 
+use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
-use listenfd::ListenFd;
+use chrono;
 use dotenv::dotenv;
+use listenfd::ListenFd;
+use std::env;
 
 mod controllers;
 mod database;
-mod routes;
 mod models;
+mod routes;
 mod schema;
 
 #[actix_web::main]
@@ -21,6 +24,16 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .configure(routes::config)
             .default_service(web::route().to(fallback_route))
+            .wrap(IdentityService::new(
+
+                    CookieIdentityPolicy::new(env::var("COOKIE_SECRET")
+                        .unwrap_or("DEFAULT_SECRET".to_string()).as_bytes())
+                    .name("auth")
+                    .path("/")
+                    .domain(env::var("APP_DOMAIN").unwrap_or("localhost".to_string()))
+                    .max_age(chrono::Duration::days(1).num_seconds())
+                    .secure(false),
+            ))
     });
 
     server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
