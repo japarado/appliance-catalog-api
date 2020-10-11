@@ -1,15 +1,25 @@
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use listenfd::ListenFd;
+
+mod routes;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    let mut listenfd = ListenFd::from_env();
+
+    let mut server = HttpServer::new(|| {
         App::new()
             .service(index)
             .default_service(web::route().to(fallback_route))
-    })
-    .bind("localhost:8000")?
-    .run()
-    .await
+    });
+
+    server = if let Some(l) = listenfd.take_tcp_listener(0).unwrap() {
+        server.listen(l)?
+    } else {
+        server.bind("localhost:8000")?
+    };
+
+    server.run().await
 }
 
 #[get("")]
