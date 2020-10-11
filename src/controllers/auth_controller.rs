@@ -19,7 +19,7 @@ pub async fn logout(_req: HttpRequest) -> impl Responder {
 use argon2::Config;
 fn create_hash(text: &String) -> String {
     let text_to_hash = text.to_owned().into_bytes();
-    let salt = env::var("SALT") 
+    let salt = env::var("SALT")
         .unwrap_or(String::from("Default salt value"))
         .into_bytes();
 
@@ -28,5 +28,5 @@ fn create_hash(text: &String) -> String {
 }
 
 fn verify_hash(text: String, hash: String) -> bool {
-    return argon2::verify_encoded(&hash, &text.into_bytes()).unwrap()
+    return argon2::verify_encoded(&hash, &text.into_bytes()).unwrap();
 }
