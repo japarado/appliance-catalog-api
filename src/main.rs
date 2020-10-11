@@ -1,9 +1,15 @@
+#[macro_use]
+extern crate diesel;
+
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use listenfd::ListenFd;
+
 
 mod controllers;
 mod database;
 mod routes;
+mod models;
+mod schema;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
