@@ -3,7 +3,7 @@ use diesel::PgConnection;
 use std::env;
 
 pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
-pub type Conn = r2d2::PooledConnection<Pool>;
+pub type Conn = r2d2::PooledConnection<ConnectionManager<PgConnection>>;
 
 pub fn create_pool() -> Pool {
     let connspec = env::var("DATABASE_URL").expect("DATABASE_URL expected in .env");
