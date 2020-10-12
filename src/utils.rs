@@ -1,11 +1,11 @@
+use crate::errors::ServiceError;
 use crate::models::user::SlimUser;
 use argon2::Config;
 use chrono::{Duration, Local};
 use jsonwebtoken::{decode, encode, Header, Validation};
+use serde::{Deserialize, Serialize};
 use std::convert::From;
 use std::env;
-use crate::errors::ServiceError;
-use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Claims {
@@ -22,7 +22,7 @@ struct Claims {
     exp: i64,
 
     // user email
-    email: String
+    email: String,
 }
 
 // struct to get converted from token and back
@@ -33,14 +33,16 @@ impl Claims {
             sub: "auth".into(),
             email: email.to_owned(),
             iat: Local::now().timestamp(),
-            exp: (Local::now() + Duration::hours(24)).timestamp()
+            exp: (Local::now() + Duration::hours(24)).timestamp(),
         }
     }
 }
 
 impl From<Claims> for SlimUser {
     fn from(claims: Claims) -> Self {
-        SlimUser {email: claims.email}
+        SlimUser {
+            email: claims.email,
+        }
     }
 }
 
