@@ -32,3 +32,15 @@ impl From<User> for SlimUser {
         SlimUser { email: user.email }
     }
 }
+
+impl From<web::Json<NewUser>> for NewUser {
+    fn from(new_user: web::Json<NewUser>) -> Self {
+        Self {
+            email: new_user.email.clone(),
+            password: new_user.password.clone(),
+            display_name: new_user.display_name.clone(),
+            profile_picture: new_user.profile_picture.clone(),
+            bio: new_user.bio.clone(),
+        }
+    }
+}
