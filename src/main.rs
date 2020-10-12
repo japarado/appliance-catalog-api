@@ -1,5 +1,7 @@
-#[macro_use] extern crate diesel;
-#[macro_use] extern crate failure;
+#[macro_use]
+extern crate diesel;
+#[macro_use]
+extern crate failure;
 
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
@@ -10,29 +12,30 @@ use std::env;
 
 mod controllers;
 mod database;
+mod errors;
 mod models;
+mod repositories;
 mod routes;
 mod schema;
+mod services;
 mod utils;
-mod errors;
 
 #[derive(Clone)]
-pub struct ApplicationData {
-    conn_pool: database::Pool
+pub struct AppData {
+    conn_pool: database::Pool,
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
+    let app_data = AppData {
+        conn_pool: database::create_pool(),
+    };
+
     let mut listenfd = ListenFd::from_env();
-
-
-    let mut server = HttpServer::new(|| {
-        let application_data = ApplicationData {
-            conn_pool: database::create_pool()
-        };
+    let mut server = HttpServer::new(move || {
         App::new()
-            .app_data(application_data.clone())
+            .data(app_data.clone())
             .service(index)
             .configure(routes::config)
             .default_service(web::route().to(fallback_route))
