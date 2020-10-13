@@ -19,6 +19,7 @@ mod routes;
 mod schema;
 mod services;
 mod utils;
+mod middlewares;
 
 #[derive(Clone)]
 pub struct AppData {
