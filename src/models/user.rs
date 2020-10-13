@@ -44,3 +44,14 @@ impl From<web::Json<NewUser>> for NewUser {
         }
     }
 }
+
+impl From<web::Json<LoginUser>> for LoginUser {
+    fn from(login_user: web::Json<LoginUser>) -> Self {
+        Self {
+            email: login_user.email.clone(),
+            password: login_user.password.clone()
+        }
+    }
+}
+
+// Type alias for logged in user
