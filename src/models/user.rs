@@ -2,10 +2,11 @@ use crate::schema::*;
 use actix_web::web;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Identifiable, Queryable, Serialize, Deserialize)]
+#[derive(Debug, Clone, Identifiable, Queryable, Serialize, Deserialize)]
 pub struct User {
     pub id: i32,
     pub email: String,
+    #[serde(skip_serializing)]
     pub password: String,
     pub display_name: Option<String>,
     pub profile_picture: Option<String>,
