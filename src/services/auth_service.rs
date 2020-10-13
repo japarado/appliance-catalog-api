@@ -1,9 +1,12 @@
 use crate::database::Conn;
 use crate::errors::ServiceError;
-use crate::models::user::{NewUser, User};
+use crate::models::user::{NewUser, User, LoginUser, SlimUser};
 use crate::models::{Multiple, Single};
 use crate::repositories::user_repository;
 use crate::utils;
+use actix_web::HttpRequest;
+use crate::AppData;
+use actix_identity::Identity;
 
 pub fn register(conn: &Conn, user: NewUser) -> Single<User> {
     match user_repository::find_by_email(conn, &user.email) {
@@ -21,11 +24,19 @@ pub fn register(conn: &Conn, user: NewUser) -> Single<User> {
     }
 }
 
-pub fn login(conn: &Conn, user: User) -> Single<User> {
+pub fn login(conn: &Conn, user: LoginUser) -> Single<User> {
     match user_repository::find_by_email(conn, &user.email) {
         Ok(found_user) => {
-            Ok(found_user)
+            if utils::verify_hash(&user.password, &found_user.password) {
+                Ok(found_user)
+            } else {
+                Err(ServiceError::Unauthorized)
+            }
         }
-        Err(error) => Err(error)
+        Err(error) => Err(error),
     }
+}
+
+pub fn generate_jwt(user: SlimUser) -> Result<String, ServiceError> {
+    Ok(utils::create_token(&user.into())?)
 }
