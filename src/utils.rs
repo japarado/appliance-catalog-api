@@ -76,6 +76,7 @@ pub fn create_hash(text: &String) -> String {
     argon2::hash_encoded(&text_to_hash, &salt, &config).unwrap()
 }
 
-pub fn verify_hash(text: String, hash: String) -> bool {
-    return argon2::verify_encoded(&hash, &text.into_bytes()).unwrap();
+pub fn verify_hash(text: &String, hash: &String) -> bool {
+    let cloned_text = text.clone();
+    return argon2::verify_encoded(hash, &cloned_text.into_bytes()).unwrap();
 }
