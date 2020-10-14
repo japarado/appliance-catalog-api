@@ -3,6 +3,7 @@ extern crate diesel;
 #[macro_use]
 extern crate failure;
 
+use actix_cors::Cors;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
 use chrono;
@@ -13,13 +14,13 @@ use std::env;
 mod controllers;
 mod database;
 mod errors;
+mod middlewares;
 mod models;
 mod repositories;
 mod routes;
 mod schema;
 mod services;
 mod utils;
-mod middlewares;
 
 #[derive(Clone)]
 pub struct AppData {
@@ -40,6 +41,8 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .configure(routes::config)
             .default_service(web::route().to(fallback_route))
+            .wrap(middlewares::auth_middleware::Logging)
+            .wrap(Cors::new().finish())
             .wrap(IdentityService::new(
                 CookieIdentityPolicy::new(
                     env::var("COOKIE_SECRET")
