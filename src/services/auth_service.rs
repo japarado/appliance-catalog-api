@@ -1,12 +1,12 @@
 use crate::database::Conn;
 use crate::errors::ServiceError;
-use crate::models::user::{NewUser, User, LoginUser, SlimUser};
+use crate::models::user::{AuthUser, LoginUser, NewUser, SlimUser, User};
 use crate::models::{Multiple, Single};
 use crate::repositories::user_repository;
 use crate::utils;
-use actix_web::HttpRequest;
 use crate::AppData;
 use actix_identity::Identity;
+use actix_web::HttpRequest;
 
 pub fn register(conn: &Conn, user: NewUser) -> Single<User> {
     match user_repository::find_by_email(conn, &user.email) {
@@ -37,6 +37,6 @@ pub fn login(conn: &Conn, user: LoginUser) -> Single<User> {
     }
 }
 
-pub fn generate_jwt(user: SlimUser) -> Result<String, ServiceError> {
-    Ok(utils::create_token(&user.into())?)
+pub fn generate_jwt(user: AuthUser) -> Result<String, ServiceError> {
+    Ok(utils::create_token(&user)?)
 }
