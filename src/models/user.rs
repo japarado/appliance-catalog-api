@@ -35,9 +35,30 @@ pub struct LoginUser {
     pub password: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AuthUser {
+    pub id: i32,
+    pub email: String,
+    pub display_name: Option<String>,
+    pub profile_picture: Option<String>,
+    pub bio: Option<String>,
+}
+
 impl From<User> for SlimUser {
     fn from(user: User) -> Self {
         SlimUser { email: user.email }
+    }
+}
+
+impl From<User> for AuthUser {
+    fn from(user: User) -> Self {
+        AuthUser {
+            id: user.id,
+            email: user.email,
+            display_name: user.display_name,
+            profile_picture: user.profile_picture,
+            bio: user.bio,
+        }
     }
 }
 
@@ -57,7 +78,7 @@ impl From<web::Json<LoginUser>> for LoginUser {
     fn from(login_user: web::Json<LoginUser>) -> Self {
         Self {
             email: login_user.email.clone(),
-            password: login_user.password.clone()
+            password: login_user.password.clone(),
         }
     }
 }
