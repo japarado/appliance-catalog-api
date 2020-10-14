@@ -38,8 +38,7 @@ pub struct LoggingMiddleware<S> {
 
 impl<S, B> Service for LoggingMiddleware<S>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>
-        + 'static,
+    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     S::Future: 'static,
     B: 'static,
 {
@@ -56,17 +55,19 @@ where
         let mut svc = self.service.clone();
 
         Box::pin(async move {
-            let mut body = BytesMut::new();
-            let mut stream = req.take_payload();
-            while let Some(chunk) = stream.next().await {
-                body.extend_from_slice(&chunk?);
-            }
-
-            println!("request body: {:?}", body);
             let res = svc.call(req).await?;
-
-            println!("response: {:?}", res.headers());
             Ok(res)
+            // let mut body = BytesMut::new();
+            // let mut stream = req.take_payload();
+            // while let Some(chunk) = stream.next().await {
+            //     body.extend_from_slice(&chunk?);
+            // }
+
+            // println!("request body: {:?}", body);
+            // let res = svc.call(req).await?;
+
+            // println!("response: {:?}", res.headers());
+            // Ok(res)
         })
     }
 }
